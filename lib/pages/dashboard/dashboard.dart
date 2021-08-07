@@ -37,7 +37,6 @@ class _DashboardState extends State<Dashboard> {
                     child: Container(
                       child: Column(
                         children: [
-                          NotificationCardWidget(),
                           SizedBox(
                             height: 20,
                           ),
@@ -62,7 +61,6 @@ class _DashboardState extends State<Dashboard> {
                             SizedBox(
                               height: 20,
                             ),
-                            ProfileCardWidget(),
                           ],
                         ),
                       ),

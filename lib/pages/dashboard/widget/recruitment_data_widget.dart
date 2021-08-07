@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dashboardsouq/pages/orderDetails/order_details.dart';
 import 'package:flutter/material.dart';
 import 'package:dashboardsouq/common/app_colors.dart';
 import 'package:dashboardsouq/common/app_responsive.dart';
@@ -20,172 +22,73 @@ class _RecruitmentDataWidgetState extends State<RecruitmentDataWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Recruitment Progress",
+                "الطلبات",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: AppColor.black,
                   fontSize: 22,
                 ),
               ),
-              Container(
-                decoration: BoxDecoration(
-                    color: AppColor.yellow,
-                    borderRadius: BorderRadius.circular(100)),
-                padding: EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 20,
-                ),
-                child: Text(
-                  "View All",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: AppColor.black),
-                ),
-              )
             ],
           ),
           Divider(
             thickness: 0.5,
             color: Colors.grey,
           ),
-          Table(
-            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-            children: [
-              /// Table Header
-              TableRow(
-                decoration: BoxDecoration(
-                  border: Border(
-                      bottom: BorderSide(
-                    color: Colors.grey,
-                    width: 0.5,
-                  )),
-                ),
-                children: [
-                  tableHeader("Full Name"),
-                  if (!AppResponsive.isMobile(context))
-                    tableHeader("Designation"),
-                  tableHeader("Status"),
-                  if (!AppResponsive.isMobile(context)) tableHeader(""),
-                ],
-              ),
-
-              /// Table Data
-              tableRow(
-                context,
-                name: "Mary G Lolus",
-                color: Colors.blue,
-                image: "assets/user1.jpg",
-                designation: "Project Manager",
-                status: "Practical Round",
-              ),
-              tableRow(
-                context,
-                name: "Vince Jacob",
-                color: Colors.blue,
-                image: "assets/user2.jpg",
-                designation: "UI/UX Designer",
-                status: "Practical Round",
-              ),
-              tableRow(
-                context,
-                name: "Nell Brian",
-                color: Colors.green,
-                image: "assets/user3.jpg",
-                designation: "React Developer",
-                status: "Final Round",
-              ),
-              tableRow(
-                context,
-                name: "Vince Jacob",
-                color: Colors.yellow,
-                image: "assets/user2.jpg",
-                designation: "UI/UX Designer",
-                status: "HR Round",
-              ),
-            ],
-          ),
           Container(
-            margin: EdgeInsets.symmetric(vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Showing 4 out of 4 Results"),
-                Text(
-                  "View All",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
+            height: MediaQuery.of(context).size.height*0.7,
+            padding: EdgeInsets.all(10),
+            child:  StreamBuilder(
+              stream: FirebaseFirestore.instance.collection("Order").snapshots(),
+              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+                if (snapshot.hasError) {
+                  return  Text('يوجد خطأ في تحميل الطلبات',textAlign: TextAlign.center,style: TextStyle(
+                      color: Colors.orange
+                  ),);
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator(color: Colors.orange,));
+                }
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ListView(
+                      scrollDirection: Axis.vertical,
+                      children:snapshot.data!.docs.map<Widget>((document){
+                        Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+                        if(data['isDone'].toString()=="false"){
+                          return GestureDetector(
+                            onTap: (){
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>OrderDetails(order:data)));
+                            },
+                            child: Card(
+                              color: Colors.white,
+                              child: ListTile(
+                                trailing:GestureDetector(child: Icon(Icons.check,color: Colors.red,),onTap: ()async{
+                                  FirebaseFirestore.instance.collection("Order").doc(document.id).update({"isDone":true});
+                                },),
+                                title: Text(data["userName"],style: TextStyle(
+                                    color: Colors.black
+                                ),),
+                                leading: Text(data["totalPrice"].toString(),style: TextStyle(
+                                  color: Colors.orange,
+                                  fontWeight: FontWeight.bold
+                                ),),
+                                subtitle: Text(data["phoneNumber"],style: TextStyle(
+                                    color: Colors.black
+                                ),),
+                              ),
+                            ),
+                          );
+                        }else{
+                          return Container();
+                        }
+                      }).toList()
+                  ),
+                );
+              },
             ),
           )
         ],
-      ),
-    );
-  }
-
-  TableRow tableRow(context, {name, image, designation, status, color}) {
-    return TableRow(
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: Colors.grey,
-              width: 0.5,
-            ),
-          ),
-        ),
-        children: [
-          //Full Name
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 15),
-            child: Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(1000),
-                  child: Image.asset(
-                    image,
-                    width: 30,
-                  ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Text(name)
-              ],
-            ),
-          ),
-          // Designation
-          if (!AppResponsive.isMobile(context)) Text(designation),
-          //Status
-          Row(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: color,
-                ),
-                height: 10,
-                width: 10,
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Text(status),
-            ],
-          ),
-          // Menu icon
-          if (!AppResponsive.isMobile(context))
-            Image.asset(
-              "assets/more.png",
-              color: Colors.grey,
-              height: 30,
-            )
-        ]);
-  }
-
-  Widget tableHeader(text) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 15),
-      child: Text(
-        text,
-        style: TextStyle(fontWeight: FontWeight.bold, color: AppColor.black),
       ),
     );
   }

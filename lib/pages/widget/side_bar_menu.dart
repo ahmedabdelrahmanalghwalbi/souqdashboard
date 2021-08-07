@@ -1,4 +1,11 @@
+import 'package:dashboardsouq/pages/advertisment/add_advertisment.dart';
+import 'package:dashboardsouq/pages/allOrders/all_orders.dart';
 import 'package:dashboardsouq/pages/category/category.dart';
+import 'package:dashboardsouq/pages/display_products/display_products.dart';
+import 'package:dashboardsouq/pages/execlusive_products/execlusive_producrs.dart';
+import 'package:dashboardsouq/pages/most_selling/most_sellings.dart';
+import 'package:dashboardsouq/pages/special_offers/special_offers.dart';
+import 'package:dashboardsouq/pages/users/users.dart';
 import 'package:flutter/material.dart';
 import 'package:dashboardsouq/common/app_colors.dart';
 import 'package:dashboardsouq/pages/Products/addProduct.dart';
@@ -15,8 +22,7 @@ class _SideBarState extends State<SideBar> {
       elevation: 0,
       child: Container(
         color: AppColor.bgSideMenu,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
           children: [
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -30,41 +36,70 @@ class _SideBarState extends State<SideBar> {
               ),
             ),
             DrawerListTile(
-              title: "Products",
+              title: "المنتجات",
               icon: "assets/menu_home.png",
               press: () {
                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AddProducts()));
               },
             ),
             DrawerListTile(
-              title: "Category",
-              icon: "assets/menu_recruitment.png",
+              title: "عرض المنتجات",
+              icon: "assets/menu_home.png",
+              press: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>DisplayProducts()));
+              },
+            ),
+            DrawerListTile(
+              title: "الأصناف",
+              icon: "assets/menu_onboarding.png",
               press: () {
                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Category()));
               },
             ),
             DrawerListTile(
-              title: "Onboarding",
-              icon: "assets/menu_onboarding.png",
-              press: () {},
+              title: "المستخدمين",
+              icon: "assets/menu_recruitment.png",
+              press: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Users()));
+              },
             ),
             DrawerListTile(
-              title: "Reports",
+              title: "عروض خاصة",
               icon: "assets/menu_report.png",
-              press: () {},
+              press: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>SpecialOffers()));
+              },
             ),
             DrawerListTile(
-              title: "Calendar",
-              icon: "assets/menu_calendar.png",
-              press: () {},
+              title: "الأكثر مبيعا",
+              icon: "assets/menu_report.png",
+              press: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>MostSelling()));
+              },
             ),
             DrawerListTile(
-              title: "Settings",
-              icon: "assets/menu_settings.png",
-              press: () {},
+              title: "منتجات خاصة",
+              icon: "assets/menu_report.png",
+              press: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ExeclusiveProducts()));
+              },
             ),
-            Spacer(),
-            Image.asset("assets/sidebar_image.png")
+            DrawerListTile(
+              title: "الطلبات",
+              icon: "assets/menu_report.png",
+              press: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AllOrders()));
+              },
+            ),
+            DrawerListTile(
+              title: "الأعلانات",
+              icon: "assets/menu_report.png",
+              press: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Advertisment()));
+              },
+            ),
+            SizedBox(height: 30,),
+            Image.asset("assets/ph.png")
           ],
         ),
       ),

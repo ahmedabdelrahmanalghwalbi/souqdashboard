@@ -1,6 +1,7 @@
 import 'dart:html';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dashboardsouq/pages/categoryDetails/category_details.dart';
 import 'package:firebase_storage/firebase_storage.dart'as firebase_storage;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,11 +17,13 @@ class Category extends StatefulWidget {
 class _CategoryState extends State<Category> {
   late File image;
   String name='';
+  bool categorySubImageLoading=false;
   String subCategoryTitle='';
   String uploadedSubCategoryImageUrl="";
   String description='';
   List<Map<dynamic,dynamic>>subCategories=[];
   String uploadedImageUrl="";
+  String uploadedSubImageUrl="";
   bool isLoading=false;
   bool subCategoryImageLoading=false;
   bool categoryImageLoading=false;
@@ -86,6 +89,41 @@ class _CategoryState extends State<Category> {
       categoryImageLoading=false;
     });
   }
+
+
+  Future getSubImage() async {
+    setState(() {
+      categorySubImageLoading=true;
+    });
+    FilePickerResult result;
+    result =(await FilePicker.platform.pickFiles(
+        type: FileType.image
+    ))!;
+    if(result !=null){
+      setState(() {
+        categorySubImageLoading=true;
+      });
+      Uint8List? uploadedFile =result.files.single.bytes;
+      String fileName=result.files.single.name;
+      firebase_storage.Reference reference=firebase_storage.FirebaseStorage.instance.ref().child(Uuid().v1());
+      final firebase_storage.UploadTask uploadTask =reference.putData(uploadedFile!);
+      uploadTask.whenComplete(()async{
+        String imageUrl = await uploadTask.snapshot.ref.getDownloadURL();
+        setState(() {
+          uploadedSubImageUrl =imageUrl;
+        });
+      });
+      setState(() {
+        categorySubImageLoading=false;
+      });
+    }
+    setState(() {
+      categorySubImageLoading=false;
+    });
+  }
+
+
+
   createCategory()async{
     setState(() {
       isLoading=true;
@@ -93,6 +131,7 @@ class _CategoryState extends State<Category> {
     await FirebaseFirestore.instance.collection("Category").add({
       'name':name,
       'imageUrl':uploadedImageUrl,
+      'subImageUrl':uploadedSubImageUrl,
       'description':description,
       'subCategories':subCategories
     }).then((value){
@@ -116,8 +155,6 @@ class _CategoryState extends State<Category> {
       ),
       body: Row(
         children: [
-          ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-          ////////////////////////////////////////////////////////////////////////////////////////////////////
           //left part
           Expanded(child: StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance.collection("Category").snapshots(),
@@ -132,15 +169,23 @@ class _CategoryState extends State<Category> {
               return ListView(
                 children: snapshot.data!.docs.map((DocumentSnapshot document) {
                   Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-                  return Card(
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        child: Image.network(data['imageUrl']),
+                  return GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>CategoryDetails()));
+                    },
+                    child: Card(
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          child: Image.network(data['imageUrl']),
+                        ),
+                        tileColor: Colors.white,
+                        hoverColor: Colors.orange[200],
+                        title: Text(data['name']),
+                    subtitle: new Text(data['description']),
+                        trailing: IconButton(onPressed: ()async{
+                          await FirebaseFirestore.instance.collection("Category").doc(document.id).delete();
+                        },icon: Icon(Icons.delete,color: Colors.orange,),),
                       ),
-                      tileColor: Colors.white,
-                      hoverColor: Colors.orange[200],
-                      title: Text(data['name']),
-//                    subtitle: new Text(data['company']),
                     ),
                   );
                 }).toList(),
@@ -148,13 +193,11 @@ class _CategoryState extends State<Category> {
             },
           )),
 
-          ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-          ////////////////////////////////////////////////////////////////////////////////////////////////////////////
           //right part
           Expanded(child: Container(
             padding: EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            child: ListView(
+//              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 //Category title text form field
                 Column(
@@ -221,7 +264,7 @@ class _CategoryState extends State<Category> {
                     ),
                   ],
                 ),
-                //select image row
+                //select main image row
                 Padding(
                   padding: EdgeInsets.only(top:30.0,bottom: 30,left: 20,right: 20),
                   child: uploadedImageUrl == ""? GestureDetector(
@@ -279,6 +322,97 @@ class _CategoryState extends State<Category> {
                         ),
                       ),
                 ),
+                //select sub  image
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                Padding(
+                  padding: EdgeInsets.only(top:30.0,bottom: 30,left: 20,right: 20),
+                  child: uploadedSubImageUrl == ""? GestureDetector(
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.orange,
+                        borderRadius: BorderRadius.circular(10),
+//                            border: Border.all(color: Colors.blueAccent),
+                      ),
+                      child: Column(
+                        children: [
+                          categorySubImageLoading?Center(child: CircularProgressIndicator(color: Colors.white,),):Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Icon(Icons.camera_alt,color: Colors.white,),
+                              SizedBox(width: 10,),
+                              Text('أختار الصورة الفرعية',style: TextStyle(
+                                  fontFamily: "cairo",
+                                  fontWeight: FontWeight.bold
+                              ),),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                    onTap: ()async{
+                      try{
+                        getSubImage();
+                      }catch(ex){
+                        print("^^^^^^^^^^^^^^^^^^^^^^ exception in uploading image ${ex}");
+                      }
+                    },
+                  ):Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.lightGreenAccent,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.lightGreenAccent),
+                    ),
+                    child: Column(
+                      children: [
+                        categorySubImageLoading?Center(child: CircularProgressIndicator(color: Colors.white,),):Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Icon(Icons.camera_alt,color: Colors.white,),
+                            SizedBox(width: 10,),
+                            Text('أختار الصورة الفرعية',style: TextStyle(
+                                fontFamily: "cairo",
+                                fontWeight: FontWeight.bold
+                            ),),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+
                 //List view of sub categories in the category
                 ///////////////////////////////////////////////////////////////////
                 Padding(padding: EdgeInsets.all(10),child: Container(
@@ -422,7 +556,7 @@ class _CategoryState extends State<Category> {
                 //submit button
                 GestureDetector(
                   onTap: (){
-                    name!=""&&description!=""&& uploadedImageUrl!=""&&subCategories.length!=0?createCategory():print("please provide all values");
+                    uploadedSubImageUrl!="" && name!=""&&description!=""&& uploadedImageUrl!=""&&subCategories.length!=0?createCategory():print("please provide all values");
                     setState(() {});
                   },
                   child: Container(

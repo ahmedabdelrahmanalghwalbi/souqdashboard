@@ -32,17 +32,7 @@ class _HeaderWidgetState extends State<HeaderWidget> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          if (!AppResponsive.isMobile(context)) ...{
-            Spacer(),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                navigationIcon(icon: Icons.search),
-                navigationIcon(icon: Icons.send),
-                navigationIcon(icon: Icons.notifications_none_rounded),
-              ],
-            )
-          }
+          Container(),
         ],
       ),
     );

@@ -1,16 +1,16 @@
 import 'dart:typed_data';
-import 'package:file_picker/file_picker.dart';
-import "package:firebase_storage/firebase_storage.dart"as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart'as firebase_storage;
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-class AddProducts extends StatefulWidget {
+class ExeclusiveProducts extends StatefulWidget {
   @override
-  _AddProductsState createState() => _AddProductsState();
+  _ExeclusiveProductsState createState() => _ExeclusiveProductsState();
 }
 
-class _AddProductsState extends State<AddProducts> {
+class _ExeclusiveProductsState extends State<ExeclusiveProducts> {
   String productName='';
   double price=0.0;
   String description='';
@@ -30,7 +30,6 @@ class _AddProductsState extends State<AddProducts> {
   String singleSize="";
   String singleColor="";
   bool isLoading=false;
-  String productCode="";
   Future getImage() async {
     setState(() {
       categoryImageLoading=true;
@@ -66,7 +65,7 @@ class _AddProductsState extends State<AddProducts> {
     setState(() {
       isLoading=true;
     });
-    await FirebaseFirestore.instance.collection("Product").add({
+    await FirebaseFirestore.instance.collection("ExeclusiveProducts").add({
       'name':productName,
       'description':description,
       'category':category,
@@ -78,8 +77,7 @@ class _AddProductsState extends State<AddProducts> {
       'colors':productColors,
       'vendor':productVendor,
       'vendorInformation':productVendorInformation,
-      'discount':discount,
-      'productCode':productCode
+      'discount':discount
     }).then((value){
       print("^^^^^^^^^^^^^^^^^^^ the product $productName Added Successfully");
       setState(() {
@@ -97,14 +95,45 @@ class _AddProductsState extends State<AddProducts> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text("add products"),
+        title: Text("منتجات حصرية"),
       ),
       body: SingleChildScrollView(
         child: Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          padding: EdgeInsets.all(10),
-          child: ListView(
+          child: Row(
+            children: [
+              Expanded(
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance.collection("ExeclusiveProducts").snapshots(),
+                    builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        return Text('Something went wrong');
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Text("Loading");
+                      }
+                      return ListView(
+                        children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                          Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+                          return Card(
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                child: Image.network(data['images'][0]),
+                              ),
+                              tileColor: Colors.white,
+                              hoverColor: Colors.orange[200],
+                              title: Text(data['name']),
+//                    subtitle: new Text(data['company']),
+                            ),
+                          );
+                        }).toList(),
+                      );
+                    },
+                  )),
+              Expanded(child: Container(
+                child: ListView(
                   scrollDirection: Axis.vertical,
                   children: [
                     //product name
@@ -205,38 +234,6 @@ class _AddProductsState extends State<AddProducts> {
                         ),
                       ],
                     ),
-                    //product code
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text('أدخل كود المنتج',style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'cairo',
-                            color: Colors.orange
-                        ),),
-                        SizedBox(height: 5,),
-                        TextFormField(
-                          decoration: InputDecoration(
-                              hintText: " أدخل الكود ",
-                              hintStyle: TextStyle(
-                                  color: Colors.black
-                              ),
-                              fillColor: Colors.orange[200],
-                              filled: true,
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.orange
-                                  )
-                              )
-                          ),
-                          onChanged: (val){
-                            setState(() {
-                              productCode=val;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
                     SizedBox(height: 30,),
                     //product Category
                     Column(
@@ -312,7 +309,7 @@ class _AddProductsState extends State<AddProducts> {
                                   ),
                                 );
                               }else{
-                               return Container();
+                                return Container();
                               }
                             }).toList(),
                           );
@@ -327,7 +324,7 @@ class _AddProductsState extends State<AddProducts> {
                       color: Colors.white,
                       child: categorySection.length==0?Center(
                         child: Text("لا يوجد اقسام بداخل تلك الفئة",style: TextStyle(
-                          color: Colors.black
+                            color: Colors.black
                         ),textAlign: TextAlign.center,),
                       ):ListView.builder(itemBuilder: (context,index){
                         return ListTile(
@@ -360,12 +357,12 @@ class _AddProductsState extends State<AddProducts> {
                                   height: 100,
                                   margin: EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: Colors.orange,
-                                    borderRadius: BorderRadius.circular(15),
-                                    image: DecorationImage(
-                                      image: NetworkImage(productImagesUrls[index]),
-                                      fit: BoxFit.contain
-                                    )
+                                      color: Colors.orange,
+                                      borderRadius: BorderRadius.circular(15),
+                                      image: DecorationImage(
+                                          image: NetworkImage(productImagesUrls[index]),
+                                          fit: BoxFit.contain
+                                      )
                                   ),
                                 );
                               },itemCount: productImagesUrls.length,),
@@ -390,39 +387,39 @@ class _AddProductsState extends State<AddProducts> {
                                   height: 10,
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.only(top:30.0,bottom: 30,left: 20,right: 20),
-                                  child:GestureDetector(
-                                    child: Container(
-                                      padding: EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        color: uploadedImageUrl == ""? Colors.orange:Colors.lightGreenAccent,
-                                        borderRadius: BorderRadius.circular(10),
+                                    padding: EdgeInsets.only(top:30.0,bottom: 30,left: 20,right: 20),
+                                    child:GestureDetector(
+                                      child: Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: uploadedImageUrl == ""? Colors.orange:Colors.lightGreenAccent,
+                                          borderRadius: BorderRadius.circular(10),
 //                            border: Border.all(color: Colors.blueAccent),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            categoryImageLoading?Center(child: CircularProgressIndicator(color: Colors.white,),):Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                              children: [
+                                                Icon(Icons.camera_alt,color: Colors.white,),
+                                                SizedBox(width: 10,),
+                                                Text('أختار صورة',style: TextStyle(
+                                                    fontFamily: "cairo",
+                                                    fontWeight: FontWeight.bold
+                                                ),),
+                                              ],
+                                            )
+                                          ],
+                                        ),
                                       ),
-                                      child: Column(
-                                        children: [
-                                          categoryImageLoading?Center(child: CircularProgressIndicator(color: Colors.white,),):Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                            children: [
-                                              Icon(Icons.camera_alt,color: Colors.white,),
-                                              SizedBox(width: 10,),
-                                              Text('أختار صورة',style: TextStyle(
-                                                  fontFamily: "cairo",
-                                                  fontWeight: FontWeight.bold
-                                              ),),
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    onTap: ()async{
-                                      try{
-                                        getImage();
-                                      }catch(ex){
-                                        print("^^^^^^^^^^^^^^^^^^^^^^ exception in uploading image ${ex}");
-                                      }
-                                    },
-                                  )
+                                      onTap: ()async{
+                                        try{
+                                          getImage();
+                                        }catch(ex){
+                                          print("^^^^^^^^^^^^^^^^^^^^^^ exception in uploading image ${ex}");
+                                        }
+                                      },
+                                    )
                                 ),
                                 ElevatedButton(style:ElevatedButton.styleFrom(
                                     shadowColor: Colors.orange[100],
@@ -507,37 +504,37 @@ class _AddProductsState extends State<AddProducts> {
                             Expanded(child:Container(child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                              Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text('أدخل المقاس',style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'cairo',
-                                    color: Colors.orange
-                                ),),
-                                SizedBox(height: 5,),
-                                TextFormField(
-                                  decoration: InputDecoration(
-                                      hintText: " أسم المقاس",
-                                      hintStyle: TextStyle(
-                                          color: Colors.black
-                                      ),
-                                      fillColor: Colors.orange[200],
-                                      filled: true,
-                                      border: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Colors.orange
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text('أدخل المقاس',style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'cairo',
+                                        color: Colors.orange
+                                    ),),
+                                    SizedBox(height: 5,),
+                                    TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: " أسم المقاس",
+                                          hintStyle: TextStyle(
+                                              color: Colors.black
+                                          ),
+                                          fillColor: Colors.orange[200],
+                                          filled: true,
+                                          border: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.orange
+                                              )
                                           )
-                                      )
-                                  ),
-                                  onChanged: (val){
-                                    setState(() {
-                                      singleSize=val;
-                                    });
-                                  },
+                                      ),
+                                      onChanged: (val){
+                                        setState(() {
+                                          singleSize=val;
+                                        });
+                                      },
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
                                 SizedBox(height: 30,),
                                 ElevatedButton(style:ElevatedButton.styleFrom(
                                     shadowColor: Colors.orange[100],
@@ -744,13 +741,13 @@ class _AddProductsState extends State<AddProducts> {
                     GestureDetector(
                       onTap: (){
                         productName!=""&&
-                        price!=0.0&&
-                        description!=''&&
-                        category!=""&&
-                        subCategory!=""&&
-                        productImagesUrls.length!=0&&
-                        productVendor!=''&&
-                        productVendorInformation!=''?createProduct():print("please provide all values");
+                            price!=0.0&&
+                            description!=''&&
+                            category!=""&&
+                            subCategory!=""&&
+                            productImagesUrls.length!=0&&
+                            productVendor!=''&&
+                            productVendorInformation!=''?createProduct():print("please provide all values");
                       },
                       child: Container(
                         width: double.infinity,
@@ -777,6 +774,9 @@ class _AddProductsState extends State<AddProducts> {
                     )
                   ],
                 ),
+              ))
+            ],
+          ),
         ),
       ),
     );
