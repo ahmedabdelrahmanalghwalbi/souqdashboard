@@ -99,8 +99,7 @@ class _AddProductsState extends State<AddProducts> {
         centerTitle: true,
         title: Text("add products"),
       ),
-      body: SingleChildScrollView(
-        child: Container(
+      body:  Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           padding: EdgeInsets.all(10),
@@ -344,13 +343,12 @@ class _AddProductsState extends State<AddProducts> {
                         );
                       },itemCount: categorySection.length,),
                     ),
+                    SizedBox(height: 20,),
                     //Images of the Product
-                    Padding(padding: EdgeInsets.all(10),child: Container(
-                      margin: EdgeInsets.only(right: 15),
-                      padding: EdgeInsets.all(10),
-                      height: 300,
+                    Container(
+                      margin: EdgeInsets.only(top: 15),
+                      height: MediaQuery.of(context).size.height/2,
                       color: Colors.orange[200],
-                      child: Expanded(
                         child: Row(
                           children: [
                             Expanded(child:productImagesUrls.length!=0?Container(
@@ -442,8 +440,8 @@ class _AddProductsState extends State<AddProducts> {
                             ),))
                           ],
                         ),
-                      ),
-                    ),),
+                    ),
+                    SizedBox(height: 20,),
                     // rating the product
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -476,13 +474,12 @@ class _AddProductsState extends State<AddProducts> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 30,),
+                    SizedBox(height: 20,),
                     //sizes of the Product
                     Padding(padding: EdgeInsets.all(10),child: Container(
                       margin: EdgeInsets.only(right: 15),
                       padding: EdgeInsets.all(10),
-                      height: 300,
-                      child: Expanded(
+                      height: MediaQuery.of(context).size.height/3,
                         child: Row(
                           children: [
                             Expanded(child:productSizes.length!=0?Container(
@@ -557,14 +554,14 @@ class _AddProductsState extends State<AddProducts> {
                             ),))
                           ],
                         ),
-                      ),
                     ),),
+                    SizedBox(height: 20,),
                     //colors of the Product
                     Padding(padding: EdgeInsets.all(10),child: Container(
                       margin: EdgeInsets.only(right: 15),
                       padding: EdgeInsets.all(10),
-                      height: 300,
-                      child: Expanded(
+                      height: MediaQuery.of(context).size.height/3,
+                      width: MediaQuery.of(context).size.width,
                         child: Row(
                           children: [
                             Expanded(child:productColors.length!=0?Container(
@@ -639,8 +636,8 @@ class _AddProductsState extends State<AddProducts> {
                             ),))
                           ],
                         ),
-                      ),
                     ),),
+                    SizedBox(height: 20,),
                     //Vendor name
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -753,7 +750,7 @@ class _AddProductsState extends State<AddProducts> {
                         productVendorInformation!=''?createProduct():print("please provide all values");
                       },
                       child: Container(
-                        width: double.infinity,
+                        width:MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
                           color:productName!=""&&
                               price!=0.0&&
@@ -778,7 +775,6 @@ class _AddProductsState extends State<AddProducts> {
                   ],
                 ),
         ),
-      ),
     );
   }
 }

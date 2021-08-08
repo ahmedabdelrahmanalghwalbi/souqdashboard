@@ -97,8 +97,8 @@ class _SpecialOffersState extends State<SpecialOffers> {
         centerTitle: true,
         title: Text("العروض الخاصة"),
       ),
-      body: SingleChildScrollView(
-        child: Container(
+      body:
+        Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: Row(
@@ -341,13 +341,12 @@ class _SpecialOffersState extends State<SpecialOffers> {
                         );
                       },itemCount: categorySection.length,),
                     ),
+                    SizedBox(height: 30,),
                     //Images of the Product
-                    Padding(padding: EdgeInsets.all(10),child: Container(
-                      margin: EdgeInsets.only(right: 15),
-                      padding: EdgeInsets.all(10),
+                    Container(
+                      margin: EdgeInsets.only(top: 15),
                       height: 300,
                       color: Colors.orange[200],
-                      child: Expanded(
                         child: Row(
                           children: [
                             Expanded(child:productImagesUrls.length!=0?Container(
@@ -439,8 +438,8 @@ class _SpecialOffersState extends State<SpecialOffers> {
                             ),))
                           ],
                         ),
-                      ),
-                    ),),
+                    ),
+                    SizedBox(height: 30,),
                     // rating the product
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -475,11 +474,10 @@ class _SpecialOffersState extends State<SpecialOffers> {
                     ),
                     SizedBox(height: 30,),
                     //sizes of the Product
-                    Padding(padding: EdgeInsets.all(10),child: Container(
+                   Container(
                       margin: EdgeInsets.only(right: 15),
                       padding: EdgeInsets.all(10),
                       height: 300,
-                      child: Expanded(
                         child: Row(
                           children: [
                             Expanded(child:productSizes.length!=0?Container(
@@ -554,14 +552,13 @@ class _SpecialOffersState extends State<SpecialOffers> {
                             ),))
                           ],
                         ),
-                      ),
-                    ),),
+                    ),
+                    SizedBox(height: 30,),
                     //colors of the Product
-                    Padding(padding: EdgeInsets.all(10),child: Container(
+                    Container(
                       margin: EdgeInsets.only(right: 15),
                       padding: EdgeInsets.all(10),
                       height: 300,
-                      child: Expanded(
                         child: Row(
                           children: [
                             Expanded(child:productColors.length!=0?Container(
@@ -636,8 +633,8 @@ class _SpecialOffersState extends State<SpecialOffers> {
                             ),))
                           ],
                         ),
-                      ),
-                    ),),
+                    ),
+                    SizedBox(height: 30,),
                     //Vendor name
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -778,7 +775,7 @@ class _SpecialOffersState extends State<SpecialOffers> {
             ],
           ),
         ),
-      ),
+
     );
   }
 }

@@ -342,12 +342,11 @@ class _MostSellingState extends State<MostSelling> {
                       },itemCount: categorySection.length,),
                     ),
                     //Images of the Product
-                    Padding(padding: EdgeInsets.all(10),child: Container(
+                    Container(
                       margin: EdgeInsets.only(right: 15),
                       padding: EdgeInsets.all(10),
                       height: 300,
                       color: Colors.orange[200],
-                      child: Expanded(
                         child: Row(
                           children: [
                             Expanded(child:productImagesUrls.length!=0?Container(
@@ -439,8 +438,7 @@ class _MostSellingState extends State<MostSelling> {
                             ),))
                           ],
                         ),
-                      ),
-                    ),),
+                    ),
                     // rating the product
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -475,11 +473,10 @@ class _MostSellingState extends State<MostSelling> {
                     ),
                     SizedBox(height: 30,),
                     //sizes of the Product
-                    Padding(padding: EdgeInsets.all(10),child: Container(
+                     Container(
                       margin: EdgeInsets.only(right: 15),
                       padding: EdgeInsets.all(10),
                       height: 300,
-                      child: Expanded(
                         child: Row(
                           children: [
                             Expanded(child:productSizes.length!=0?Container(
@@ -554,14 +551,12 @@ class _MostSellingState extends State<MostSelling> {
                             ),))
                           ],
                         ),
-                      ),
-                    ),),
+                    ),
                     //colors of the Product
-                    Padding(padding: EdgeInsets.all(10),child: Container(
+                    Container(
                       margin: EdgeInsets.only(right: 15),
                       padding: EdgeInsets.all(10),
                       height: 300,
-                      child: Expanded(
                         child: Row(
                           children: [
                             Expanded(child:productColors.length!=0?Container(
@@ -636,8 +631,8 @@ class _MostSellingState extends State<MostSelling> {
                             ),))
                           ],
                         ),
-                      ),
-                    ),),
+                    ),
+                    SizedBox(height: 30,),
                     //Vendor name
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,

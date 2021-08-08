@@ -323,38 +323,6 @@ class _CategoryState extends State<Category> {
                       ),
                 ),
                 //select sub  image
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 Padding(
                   padding: EdgeInsets.only(top:30.0,bottom: 30,left: 20,right: 20),
                   child: uploadedSubImageUrl == ""? GestureDetector(
@@ -415,11 +383,10 @@ class _CategoryState extends State<Category> {
 
                 //List view of sub categories in the category
                 ///////////////////////////////////////////////////////////////////
-                Padding(padding: EdgeInsets.all(10),child: Container(
+                 Container(
                   margin: EdgeInsets.only(right: 15),
                   padding: EdgeInsets.all(10),
                   height: 300,
-                  child: Expanded(
                     child: Row(
                       children: [
                         Expanded(child:subCategories.length!=0?Container(
@@ -550,8 +517,7 @@ class _CategoryState extends State<Category> {
                         ),))
                       ],
                     ),
-                  ),
-                ),),
+                ),
                 ///////////////////////////////////////////////////////////////////
                 //submit button
                 GestureDetector(
